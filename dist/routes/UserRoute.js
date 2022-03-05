@@ -9,5 +9,6 @@ const UserController_1 = require("../controller/UserController");
 const router = express_1.default.Router();
 router.post('/userSignUp', UserController_1.userSignUp); //User Registration route
 router.get('/verify-email', Nodemailer_1.emailVerified); // New User verification route
+router.post('/login', UserController_1.login); // Login  User
 exports.default = router;
 //# sourceMappingURL=UserRoute.js.map

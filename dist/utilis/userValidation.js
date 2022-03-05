@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateUserSignUp = void 0;
+exports.validateSignIn = exports.validateUserSignUp = void 0;
 const joi_1 = __importDefault(require("joi"));
 const validateUserSignUp = (data) => {
     const schema = joi_1.default
@@ -24,4 +24,15 @@ const validateUserSignUp = (data) => {
     return schema.validate(data, option);
 };
 exports.validateUserSignUp = validateUserSignUp;
+const validateSignIn = (data) => {
+    const schema = joi_1.default.object({
+        email: joi_1.default.string().required().email(),
+        password: joi_1.default.string().trim().min(6).required()
+    }).unknown();
+    const matthew = {
+        errors: { wrap: { label: " " } },
+    };
+    return schema.validate(data, matthew);
+};
+exports.validateSignIn = validateSignIn;
 //# sourceMappingURL=userValidation.js.map

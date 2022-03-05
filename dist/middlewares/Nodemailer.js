@@ -23,7 +23,7 @@ const emailVerification = (req, createUser) => {
     const validationEmail = {
         from: " 'Email Verification' <noreplyTimeisNow247@gmail.com> ",
         to: createUser.email,
-        subject: "Customer Relation Mnangement - Email Verification",
+        subject: "Customer Relation Management - Email Verification",
         html: `<h2> ${createUser.firstName}! Thank you for choosen CRM </h2>
       <h3>Please verify your email to complete the registration...</h3>
       Kindly click this <a href="http://localhost:7700/users/verify-email?token=${createUser.verificaticationToken}"><b>Link</b></a>`,
@@ -38,7 +38,7 @@ const emailVerified = async (req, res) => {
         // Set accountVerified to true and verification token to empty string once the user is verified
         let verifyNewUser = await User.findOne({ where: { verificaticationToken: token } });
         if (!verifyNewUser)
-            return res.send({ Message: "Invalid Link" });
+            return res.send({ Message: "Invalid Link or Expired Link" });
         res.send({ Message: "You have been successfully verified" });
         verifyNewUser.verificaticationToken = "";
         verifyNewUser.accountVerified = true;
