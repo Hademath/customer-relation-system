@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userSignUp = void 0;
+exports.login = exports.userSignUp = void 0;
 const userValidation_1 = require("../utilis/userValidation");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const index_1 = __importDefault(require("../db/models/index"));
 const crypto_1 = __importDefault(require("crypto"));
 const Nodemailer_1 = require("../middlewares/Nodemailer");
 const Nodemailer_2 = require("../middlewares/Nodemailer");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const { User } = index_1.default;
 async function userSignUp(req, res, next) {
     try {
@@ -52,4 +53,38 @@ async function userSignUp(req, res, next) {
     }
 }
 exports.userSignUp = userSignUp;
+// Login To keep track of the user existence and authorization
+async function login(req, res, next) {
+    try {
+        const { error } = (0, userValidation_1.validateSignIn)(req.body);
+        if (error)
+            return res.status(400).send(error.details[0].message);
+        const { password, email } = req.body;
+        const checkUserExit = await User.findOne({ where: { email: email } });
+        if (!checkUserExit)
+            return res.status(400).json("The user with the email does not Exist");
+        else {
+            const comparePassword = await bcrypt_1.default.compare(password, checkUserExit.password);
+            if (!comparePassword)
+                return res.status(400).json("The password you enter is incorrect");
+            else {
+                const payload = { email, lastName: checkUserExit.lastName };
+                const token = jsonwebtoken_1.default.sign(payload, process.env.SIGNIN_TOKEN_SECRET);
+                res.cookie("token", token, {
+                    maxAge: 24 * 60 * 60 * 1000,
+                    httpOnly: true,
+                })
+                    .status(200).send({
+                    Message: "User Successfully Login",
+                    accessToken: token,
+                    firstName: checkUserExit.firstName,
+                });
+            }
+        }
+    }
+    catch (error) {
+        res.json(error);
+    }
+}
+exports.login = login;
 //# sourceMappingURL=UserController.js.map

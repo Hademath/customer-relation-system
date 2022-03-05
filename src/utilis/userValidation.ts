@@ -21,3 +21,14 @@ export const validateUserSignUp = (data: validateUser) => {
   };
   return schema.validate(data, option); 
 };
+
+export const validateSignIn = (data: validateUser) => {
+    const schema = joi.object({
+    email: joi.string().required().email(),
+    password:joi.string().trim().min(6).required()
+    }).unknown();
+    const matthew = {
+    errors: { wrap: { label: " " } },
+    };
+    return schema.validate(data, matthew)
+}
